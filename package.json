@@ -1,0 +1,19 @@
+{
+  "name": "stack-promise",
+  "version": "0.1.0",
+  "description": "Stack Promises in functions to run later.",
+  "main": "index.js",
+  "repository": "https://github.com/trapcodeio/stack-promise.git",
+  "author": "trapcodeio",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "prepublishOnly": "npm run build",
+    "build": "npx tsc",
+    "watch": "npx tsc --watch"
+  },
+  "devDependencies": {
+    "prettier": "^2.5.1",
+    "typescript": "^4.5.5"
+  }
+}
