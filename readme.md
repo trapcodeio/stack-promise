@@ -16,7 +16,7 @@ await Promise.all(tasks.map(task => task()))
 
 Using this library, the code above can be written as:
 ```typescript
-import { StackedPromise } from "./index"; 
+import { StackedPromise } from "stack-promise";
 
 const tasks = StackedPromise();
 
