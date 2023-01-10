@@ -12,10 +12,11 @@ class StackPromise<T = any> {
      */
     push(fn: StackedPromise<T>) {
         this.stack.push(fn);
+        return this;
     }
 
     /**
-     * Run the stack
+     * Unstack the stack
      */
     unstack() {
         return this.stack.map((fn) => fn());
@@ -35,10 +36,84 @@ class StackPromise<T = any> {
         this.stack = this.stack.concat(stack.stack);
         return this;
     }
+
+
+    /**
+     * Some - Run the stack and return true if one of the passes the validation
+     * @param validate
+     */
+    some(validate: (value: T) => boolean) {
+        return SomePromise<T>(this.stack, validate);
+    }
+
+    /**
+     * Every - Run the stack and return true if all the passes the validation
+     */
+    every(validate: (value: T) => boolean) {
+        return EveryPromise<T>(this.stack, validate);
+    }
 }
 
+/**
+ * Create a new stack
+ * @constructor
+ */
 export function StackedPromise<T = any>() {
     return new StackPromise<T>();
 }
+
+
+/**
+ * SomePromise - Run the stack and return true if one of the passes the validation
+ * @param promises
+ * @param validate
+ * @constructor
+ */
+function SomePromise<T>(
+    promises: (() => Promise<T>)[],
+    validate: (value: T) => boolean
+): Promise<boolean> {
+    return new Promise(async (resolve) => {
+        // run each promise
+        // Stop when validate returns true
+        for (const promise of promises) {
+            const result = await promise();
+
+            if (validate(result)) {
+                resolve(true);
+                return;
+            }
+        }
+
+        resolve(false);
+    });
+}
+
+/**
+ * EveryPromise - Run the stack and return true if all the passes the validation
+ * @param promises
+ * @param validate
+ * @constructor
+ */
+function EveryPromise<T>(
+    promises: (() => Promise<T>)[],
+    validate: (value: T) => boolean
+): Promise<boolean> {
+    return new Promise(async (resolve) => {
+        // run each promise
+        // stop when validate returns false
+        for (const promise of promises) {
+            const result = await promise();
+
+            if (!validate(result)) {
+                resolve(false);
+                return;
+            }
+        }
+
+        resolve(true);
+    });
+}
+
 
 export default StackPromise;
