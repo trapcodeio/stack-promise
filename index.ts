@@ -1,16 +1,22 @@
-export type StackedPromise<T = any> = () => Promise<T>;
+export type FnReturnsPromise<T = any> = () => Promise<T>;
 
 class StackPromise<T = any> {
     /**
      * Stack Array
      */
-    stack: Array<StackedPromise<T>> = [];
+    stack: FnReturnsPromise<T>[] = [];
+    
+    constructor(stacks: FnReturnsPromise<T>[] = []) {
+        if(stacks && stacks.length > 0) {
+            this.stack = stacks;
+        }
+    }
 
     /**
      * Push a new promise to the stack
      * @param fn
      */
-    push(fn: StackedPromise<T>) {
+    push(fn: FnReturnsPromise<T>) {
         this.stack.push(fn);
         return this;
     }
@@ -58,8 +64,8 @@ class StackPromise<T = any> {
  * Create a new stack
  * @constructor
  */
-export function StackedPromise<T = any>() {
-    return new StackPromise<T>();
+export function StackedPromise<T = any>(stacks: FnReturnsPromise<T>[] = []) {
+    return new StackPromise<T>(stacks);
 }
 
 
